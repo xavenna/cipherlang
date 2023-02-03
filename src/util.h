@@ -5,8 +5,19 @@
 #include <vector>
 #include <sstream>
 #include <fstream>
+#include <map>
+#include <limits>
 
 
+template <class T, class U>
+bool searchMapValue(std::map<T,U> map, U val) {
+  for (auto it = map.begin(); it != map.end(); ++it) {
+	if (it->second == val) {
+      return true;
+	}
+  }
+  return false;
+}
 //! determines whether n is contained in key
 bool ifMatch(char n, std::string key);
 //! returns true if supplied string is a number

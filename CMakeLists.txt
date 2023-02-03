@@ -13,7 +13,7 @@ set(cipherlang_src
 
 #find_library(XCIPHER_LIB xcipher)
 
-add_compile_definitions(MAJOR_VERSION=0 MINOR_VERSION=0 PATCH_NUM=0)
+add_compile_definitions(MAJOR_VERSION=0x37 MINOR_VERSION=0x37 PATCH_NUM=0x37)
 
 add_library(xcipher STATIC IMPORTED)
 set_target_properties(xcipher PROPERTIES IMPORTED_LOCATION /usr/lib/libxcipher.a)

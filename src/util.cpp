@@ -1,5 +1,4 @@
 #include "util.h"
-#include <limits>
 
 // util: various utility functions used by other parts of the code. None of these are stellar-enigma specific
 

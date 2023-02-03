@@ -33,6 +33,7 @@ struct Token {
 };
 
 std::string tokenInfo(Token);
+std::string getIdentName(Token);
 void tokenizeString(const std::vector<std::string>& script, std::vector<Token>& tlist);
 
 bool tokenizeLine(const std::string& line, std::vector<Token>& tlist);

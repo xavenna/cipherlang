@@ -29,6 +29,9 @@ int transformText(const std::string& infile, const std::string& outfile, const s
 	loader.close();
 	//convert the contents of rawMethod to a method file (tokenize, transform)
 	convertToMethod(method, rawMethod);
+	//for debugging, write to a file
+	std::ofstream write("bin.cpth", std::ios::binary);
+	write.write(reinterpret_cast<const char*>(method.data()), method.size());
   }
   else {
     //search ~/.ciplang/.methods for requested method
