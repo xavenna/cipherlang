@@ -453,7 +453,6 @@ int binarify(const std::vector<ProtoInstruction>& instructions, std::vector<Bina
 	  for(auto x : instructions[i].args) {
 		//convert argument to a number, with the correct header bits
 		if(!x.empty()) {
-		  //std::cout << "'" << x << "'";
 		  if(isNum(x)) {
 			//it's a number
 			bvec[i].args.push_back(((numberBase & 0x3f) << 10) | (std::stoi(x) & 0x3ff));
@@ -472,17 +471,19 @@ int binarify(const std::vector<ProtoInstruction>& instructions, std::vector<Bina
 
 
 std::vector<std::uint8_t> BinaryInstruction::binary() {
-  std::vector<std::uint8_t> t(5 + (argc > 0) + args.size()*2);
+  std::vector<std::uint8_t> t(5 + (opcode == 1) + args.size()*2);
+  //std::cout << +argc << ',' << +opcode << ',';
+  //std::cout << t.size() << '\n';
   t[0] = opcode;
   t[1] = (first & 0xff00) >> 8;
   t[2] = first & 0xff;
   t[3] = (second & 0xff00) >> 8;
   t[4] = second & 0xff;
-  if(argc > 0) {
+  if(opcode == 1) {
 	t[5] = argc;
 	for(unsigned i=0;i<args.size();i++) {
-	  t[i+5] = (args[i] & 0xff00) >> 8;
-	  t[i+6] = args[i] & 0xff;
+	  t[i+6] = (args[i] & 0xff00) >> 8;
+	  t[i+7] = args[i] & 0xff;
 	}
   }
   return t;
@@ -615,7 +616,7 @@ int createHeader(std::vector<std::uint8_t>& header, int argmin, int argmax, int 
   header[0x4] = static_cast<std::uint8_t>(MAJOR_VERSION);
   header[0x5] = static_cast<std::uint8_t>(MINOR_VERSION);
   header[0x6] = static_cast<std::uint8_t>(PATCH_NUM);
-  header[0x7] = 0;
+  header[0x7] = 0x0;
   header[0x8] = static_cast<std::uint8_t>(argmin);
   header[0x9] = static_cast<std::uint8_t>(argmax);
   header[0xa] = const_wid;

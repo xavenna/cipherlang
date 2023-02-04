@@ -9,6 +9,7 @@ set(cipherlang_src
 	src/main.cpp
 	src/translate.cpp
 	src/compile.cpp
+	src/interpret.cpp
 )
 
 #find_library(XCIPHER_LIB xcipher)

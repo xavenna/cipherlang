@@ -2,6 +2,7 @@
 #include "translate.h"
 #include "token.h"
 #include "util.h"
+#include "interpret.h"
 
 
 
@@ -55,11 +56,40 @@ int transformText(const std::string& infile, const std::string& outfile, const s
 	loader.close();
 	loader.open("~/.ciplang/methods/"+methodName, std::ios::binary);
 	getBinFile(loader, method);
+	loader.close();
   }
   //now that the method has been determined, get the input text, transform it, and 
   //write it to the appropriate place
 
   //call the interpreter using procured method
+
+  //determine text
+
+  std::string input;
+  std::string output;
+  if(infile.empty()) {
+	//std::cout << "Error: stdin hasn't been implemented yet\n";
+    std::istreambuf_iterator<char> begin(std::cin), end;
+    std::string s(begin, end);
+	input = s;
+  }
+  else {
+	std::ifstream load(infile);
+	if(!load.is_open()) {
+	  std::cout << "Error: input file could not be opened\n";
+	}
+	getEntireFile(load, input);
+  }
+
+
+  interpret(method, input, output);
+
+  if(outfile.empty()) {
+	std::cout << output;
+  }
+  else {
+	std::cout << "yim\n";
+  }
   return 0;
 }
 

@@ -89,6 +89,9 @@ void parse(const std::string& n, std::vector<std::string>& th) {
 
 void genericParse(const std::string& n, std::vector<std::string>& th, const std::string key) {
   std::string cw;
+  th.clear();
+  if(n.size() == 0)
+	  return;
   for(auto x : n) {
 	if(ifMatch(x, key)) {
 	  if(!cw.empty()) {

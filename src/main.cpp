@@ -5,7 +5,6 @@
 
 int main(int argc, char** argv) {
   //first, parse arguments
-  //
   std::string infile;
   std::string outfile;
   std::string defineFile;
