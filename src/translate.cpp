@@ -29,7 +29,9 @@ int transformText(const std::string& infile, const std::string& outfile, const s
 	getEntireFile(loader, rawMethod);
 	loader.close();
 	//convert the contents of rawMethod to a method file (tokenize, transform)
-	convertToMethod(method, rawMethod);
+	if(convertToMethod(method, rawMethod) != 0) {
+	  return 1;
+	}
 	//for debugging, write to a file
 	std::ofstream write("bin.cpth", std::ios::binary);
 	write.write(reinterpret_cast<const char*>(method.data()), method.size());
@@ -68,7 +70,6 @@ int transformText(const std::string& infile, const std::string& outfile, const s
   std::string input;
   std::string output;
   if(infile.empty()) {
-	//std::cout << "Error: stdin hasn't been implemented yet\n";
     std::istreambuf_iterator<char> begin(std::cin), end;
     std::string s(begin, end);
 	input = s;
@@ -108,7 +109,9 @@ int convertToMethod(std::vector<std::uint8_t>& output, const std::string& input)
 	*/
 
 	//now, compile to bytecode
-	compileMethod(tokens, output);
+	if(compileMethod(tokens, output) != 0) {
+	  return 1;
+	}
 
 	return 0;
 }

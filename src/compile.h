@@ -15,7 +15,7 @@
 #define NUM_SPECIAL_VARS 11
 
 #define MAX_CONST_LEN 256
-#define CONST_HEADER_WIDTH 1
+#define CONST_HEADER_WIDTH 2
 
 #define HEADER_LEN 16
 
@@ -23,6 +23,7 @@ struct BinaryInstruction {
   std::uint8_t opcode;
   std::uint16_t first;
   std::uint16_t second;
+  std::uint16_t third;
   std::uint8_t argc;
   std::vector<std::uint16_t> args;
 
@@ -51,7 +52,7 @@ struct ProtoInstruction {
 };
 
 int compileMethod(std::vector<Token>& tlist, std::vector<std::uint8_t>& method);
-int createHeader(std::vector<std::uint8_t>& header, int argmin, int argmax, int numConsts, unsigned textLen);
+int createHeader(std::vector<std::uint8_t>& header, int argmin, int argmax, int numConsts, unsigned textLen, unsigned varNum);
 
 
 

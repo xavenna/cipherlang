@@ -14,6 +14,8 @@ int transform_trim_alpha(std::string& substrate);
 int transform_prune(std::string& substrate);
 int transform_prune_numeric(std::string& substrate);
 
-int caesarian_shift(std::string& substrate, const std::string& arg);
+int caesarian_shift(std::string& substrate, std::int16_t arg);
+int rail_cipher(std::string& substrate, std::int16_t arg);
+int inverse_rail_cipher(std::string& substrate, std::int16_t arg);
 
 #endif
