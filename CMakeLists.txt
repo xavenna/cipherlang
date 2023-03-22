@@ -21,7 +21,7 @@ set_target_properties(xcipher PROPERTIES IMPORTED_LOCATION /usr/lib/libxcipher.a
 #set_property(TARGET foo PROPERTY IMPORTED_LOCATION /usr/lib/libfoo.a)
 
 
-set (CMAKE_CXX_STANDARD 11)
+set (CMAKE_CXX_STANDARD 17)
 
 add_executable(cipherlang ${cipherlang_src})
 target_link_libraries(cipherlang xcipher)

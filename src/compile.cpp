@@ -124,12 +124,14 @@ int compileMethod(std::vector<Token>& tlist, std::vector<std::uint8_t>& method) 
     return -1;
   }
 
-
   //replace variables and constants with an appropriate reference
   // also, relocate any strings (like args) to const table
   if(resolveReferences(instructions, variables, constants, constvals) != 0) {
     return -1;
   }
+
+  // check for redundant proto-instructions
+
 
   //all identifiers will be replaced with a type and number, referring to their position
   //in the appropriate table
@@ -248,7 +250,7 @@ int locateVars(const std::vector<Statement>& statements, std::vector<std::string
             if(std::find(variables.begin(), variables.end(), y.name) == variables.end()) {
               //check if y.name is a reserved special var name
               if(!isValidSpecialVar(y.name)) {
-                std::cerr << "Error: use of undeclared variable '"<<y.name<<"'\n";
+                std::cerr << "Error: identifier '"<<y.name<<"' is not a valid var or const name\n";
                 return 1;
               }
               else {
@@ -394,6 +396,7 @@ int consolidate(std::vector<ProtoInstruction>& instructions, const std::vector<S
       //now, construct the actual proto-instruction
       // write and load trigger the same internal mechanism, just have different allowed
       // arguments
+
       p.type = ProtoInstruction::Load;
       p.target = x.back().name;
       p.source = x[1].name;
@@ -496,17 +499,22 @@ int resolveReferences(std::vector<ProtoInstruction>& instructions, std::vector<s
       //identifiers used as both var and const are filtered out by earlier stages
         if(!updateReference(constants, x.source, CONST_OFFSET)) {
           if(getSpecialVarNum(x.source) != -1) {
-          x.source = std::to_string(SPECIAL_VAR_OFFSET + getSpecialVarNum(x.source));
+            x.source = std::to_string(SPECIAL_VAR_OFFSET + getSpecialVarNum(x.source));
           }
         }
       }
 
       if(!updateReference(variables, x.target, VAR_OFFSET)) {
       //identifiers used as both var and const are filtered out by earlier stages
+        //it is illegal
         if(!updateReference(constants, x.target, CONST_OFFSET)) {
           if(getSpecialVarNum(x.target) != -1) {
-          x.target = std::to_string(SPECIAL_VAR_OFFSET + getSpecialVarNum(x.target));
+            x.target = std::to_string(SPECIAL_VAR_OFFSET + getSpecialVarNum(x.target));
           }
+        }
+        else {
+          std::clog << "Error: illegal write to constant\n";
+          return 1;
         }
       }
       break;
@@ -516,7 +524,7 @@ int resolveReferences(std::vector<ProtoInstruction>& instructions, std::vector<s
       //identifiers used as both var and const are filtered out by earlier stages
         if(!updateReference(constants, x.target, CONST_OFFSET)) {
           if(getSpecialVarNum(x.target) != -1) {
-          x.target = std::to_string(SPECIAL_VAR_OFFSET + getSpecialVarNum(x.target));
+            x.target = std::to_string(SPECIAL_VAR_OFFSET + getSpecialVarNum(x.target));
           }
         }
       }
@@ -537,7 +545,7 @@ int resolveReferences(std::vector<ProtoInstruction>& instructions, std::vector<s
       //identifiers used as both var and const are filtered out by earlier stages
         if(!updateReference(constants, x.source, CONST_OFFSET)) {
           if(getSpecialVarNum(x.source) != -1) {
-          x.source = std::to_string(SPECIAL_VAR_OFFSET + getSpecialVarNum(x.source));
+            x.source = std::to_string(SPECIAL_VAR_OFFSET + getSpecialVarNum(x.source));
           }
         }
       }
@@ -545,7 +553,7 @@ int resolveReferences(std::vector<ProtoInstruction>& instructions, std::vector<s
       //identifiers used as both var and const are filtered out by earlier stages
         if(!updateReference(constants, x.second_source, CONST_OFFSET)) {
           if(getSpecialVarNum(x.second_source) != -1) {
-          x.second_source = std::to_string(SPECIAL_VAR_OFFSET + getSpecialVarNum(x.second_source));
+            x.second_source = std::to_string(SPECIAL_VAR_OFFSET + getSpecialVarNum(x.second_source));
           }
         }
       }
@@ -563,6 +571,7 @@ int resolveReferences(std::vector<ProtoInstruction>& instructions, std::vector<s
     case ProtoInstruction::Nil:
       //invalid instruction, maybe error?
       std::cerr << "Error: invalid instruction\n";
+      return 1;
       break;
     }
   }
@@ -629,6 +638,9 @@ int generate_text(std::vector<std::uint8_t>& text, const std::vector<BinaryInstr
 }
 
 int generate_const(std::vector<std::uint8_t>& table, const std::map<std::string, std::string>& value_hash, std::vector<std::string> constants) {
+  // before generating the actual const table, search for possible optimizations:
+
+
   //first, generate const table head (contains the offsets for each const)
   int totalCharLen{0};
   for(auto x : value_hash) {

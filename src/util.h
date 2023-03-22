@@ -25,7 +25,7 @@ bool isNum(const std::string& st);
 //! returns true if specified string is a boolean ("0" or "1")
 bool isBool(const std::string& st);
 bool getEntireFile(std::ifstream& in, std::string& out);
-bool getBinFile(std::ifstream& in, std::vector<std::uint8_t> out);
+bool getBinFile(std::ifstream& in, std::vector<std::uint8_t>& out);
 size_t binFileSize(std::ifstream& in);
 //! breaks n into a vector, starting a new element wherever a component of key is found
 void parse(const std::string& n, std::vector<std::string>& th);

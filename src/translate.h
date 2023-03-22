@@ -3,7 +3,10 @@
 #include <xcipher.hpp>
 #include <fstream>
 #include <iostream>
+#include <filesystem>
 #include "compile.h"
+
+namespace fs = std::filesystem;
 
 int transformText(const std::string&, const std::string&, const std::string&, const std::string&, bool);
 

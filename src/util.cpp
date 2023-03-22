@@ -1,4 +1,5 @@
 #include "util.h"
+#include <iostream>
 
 // util: various utility functions used by other parts of the code. None of these are stellar-enigma specific
 
@@ -30,7 +31,7 @@ bool getEntireFile(std::ifstream& in, std::string& out) {
 	return true;
 }
 
-bool getBinFile(std::ifstream& in, std::vector<std::uint8_t> out) {
+bool getBinFile(std::ifstream& in, std::vector<std::uint8_t>& out) {
 	if(!in.is_open())
 		return false;
 	auto size = binFileSize(in);

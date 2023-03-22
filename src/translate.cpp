@@ -17,48 +17,64 @@ int transformText(const std::string& infile, const std::string& outfile, const s
   std::vector<std::uint8_t> method;
   if(localMethod) {
     if(methodName.empty()) {
-      std::cout << "Error: null local filename - invalid call\n";
-	  return -1;
-	}
+      std::clog << "Error: null local filename - invalid call\n";
+      return -1;
+    }
     loader.open(methodName);
-	if(!loader.is_open()) {
-      std::cout << "Error: Local file '" << methodName << "' could not be located\n";
-	  return -1;
-	}
-	std::string rawMethod;
-	getEntireFile(loader, rawMethod);
-	loader.close();
-	//convert the contents of rawMethod to a method file (tokenize, transform)
-	if(convertToMethod(method, rawMethod) != 0) {
-	  return 1;
-	}
-	//for debugging, write to a file
-	std::ofstream write("bin.cpth", std::ios::binary);
-	write.write(reinterpret_cast<const char*>(method.data()), method.size());
+    if(!loader.is_open()) {
+      std::clog << "Error: Local file '" << methodName << "' could not be located\n";
+      return -1;
+    }
+    fs::path cache("."+methodName+".cpth");
+    //check if an up-to-date cached bytecode exists
+    if(fs::exists(cache) && fs::last_write_time(cache) > fs::last_write_time(fs::path(methodName))) {
+      //use cached bytecode
+      std::clog << "Using cached bytecode file\n";
+      loader.close();
+      loader.open(cache, std::ios::binary);
+      if(!loader.is_open()) {
+        std::cerr << "Error: cache couldn't be opened\n";
+        return 1;
+      }
+      getBinFile(loader, method);
+      loader.close();
+    }
+    else {
+      std::string rawMethod;
+      getEntireFile(loader, rawMethod);
+      loader.close();
+      //convert the contents of rawMethod to a method file (tokenize, transform)
+      if(convertToMethod(method, rawMethod) != 0) {
+        return 1;
+      }
+      //for debugging, write to a file
+      std::ofstream write(cache, std::ios::binary);
+      write.write(reinterpret_cast<const char*>(method.data()), method.size());
+    }
   }
   else {
     //search ~/.ciplang/.methods for requested method
     std::string line;
     loader.open("~/.ciplang/.methods");
-	//search for 'method' in loader
-	bool found{false};
-	while(loader.peek() != EOF) {
+    //search for 'method' in loader
+    bool found{false};
+    while(loader.peek() != EOF) {
       std::getline(loader, line);
       if(line == methodName) {
         //valid method, we can load it in
-		found = true;
-	  }
-	}
-	if(!found) {
-      std::cout << "Error: requested method '"<<methodName<<"' could not be located.\n"
-	            << "Did you forget -f?\n";
-	  return -1;
-	}
-	//load contents of requested file
-	loader.close();
-	loader.open("~/.ciplang/methods/"+methodName, std::ios::binary);
-	getBinFile(loader, method);
-	loader.close();
+        found = true;
+      }
+    }
+    if(!found) {
+      std::clog << "Error: requested method '"<<methodName<<"' could not be located.\n"
+                << "Did you forget -f?\n";
+      return -1;
+    }
+    //load contents of requested file
+    loader.close();
+    loader.open("~/.ciplang/methods/"+methodName, std::ios::binary);
+    getBinFile(loader, method);
+    loader.close();
   }
   //now that the method has been determined, get the input text, transform it, and 
   //write it to the appropriate place
@@ -72,24 +88,24 @@ int transformText(const std::string& infile, const std::string& outfile, const s
   if(infile.empty()) {
     std::istreambuf_iterator<char> begin(std::cin), end;
     std::string s(begin, end);
-	input = s;
+    input = s;
   }
   else {
-	std::ifstream load(infile);
-	if(!load.is_open()) {
-	  std::cout << "Error: input file could not be opened\n";
-	}
-	getEntireFile(load, input);
+    std::ifstream load(infile);
+    if(!load.is_open()) {
+      std::cout << "Error: input file could not be opened\n";
+    }
+    getEntireFile(load, input);
   }
 
 
   interpret(method, input, output);
 
   if(outfile.empty()) {
-	std::cout << output;
+    std::cout << output;
   }
   else {
-	std::cout << "yim\n";
+    std::cout << "yim\n";
   }
   return 0;
 }
