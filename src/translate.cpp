@@ -22,7 +22,8 @@ int transformText(const std::string& infile, const std::string& outfile, const s
     }
     loader.open(methodName);
     if(!loader.is_open()) {
-      std::clog << "Error: Local file '" << methodName << "' could not be located\n";
+      std::clog << "Error: Local file '" << methodName << "' could not be located.\n";
+      std::clog << "If you were trying to use a global method, omit -f\n";
       return -1;
     }
     fs::path cache("."+methodName+".cpth");
@@ -105,7 +106,8 @@ int transformText(const std::string& infile, const std::string& outfile, const s
     std::cout << output;
   }
   else {
-    std::cout << "yim\n";
+    std::ofstream out(outfile);
+    out << output;
   }
   return 0;
 }
